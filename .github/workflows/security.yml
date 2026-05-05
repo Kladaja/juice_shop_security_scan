@@ -1,0 +1,52 @@
+name: Juice Shop Security Scan
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Start Juice Shop
+        run: docker run -d -p 3000:3000 bkimminich/juice-shop
+
+      - name: Wait for app
+        run: |
+          for i in {1..30}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "App is up!"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install your framework from GitHub
+        run: pip install git+https://github.com/Kladaja/security_scanner.git
+
+      - name: Run scan
+        run: |
+          python -m main scan -t http://localhost:3000 -y --no-bruteforce -o json --output-dir output
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: report
+          path: output/
+
+      - name: Check grade
+        run: |
+          GRADE=$(cat output/*.json | python -c "import sys, json; print(json.load(sys.stdin)['summary']['grade'])")
+          echo "Grade: $GRADE"
+          if [[ "$GRADE" == "D" || "$GRADE" == "F" ]]; then
+            exit 1
+          fi
