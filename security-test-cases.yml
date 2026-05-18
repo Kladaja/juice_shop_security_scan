@@ -1,0 +1,16 @@
+injection:
+  endpoints:
+    - path: /rest/products/search
+      method: GET
+      params:
+        q: apple
+
+    - path: /rest/products/search
+      method: GET
+      params:
+        q: test
+
+    - path: /search
+      method: GET
+      params:
+        q: test

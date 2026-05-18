@@ -37,7 +37,7 @@ jobs:
         run: pip install -r security_scanner/requirements.txt
 
       - name: Run scanner
-        run: python security_scanner/main.py scan -t http://localhost:3000 -y -o json --output-dir output
+        run: python security_scanner/main.py scan -t http://localhost:3000 -m all -y -o json --output-dir output --custom-endpoints security-test-cases.yml
 
       - name: Upload report
         uses: actions/upload-artifact@v4
