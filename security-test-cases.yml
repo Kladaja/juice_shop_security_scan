@@ -5,12 +5,17 @@ injection:
       params:
         q: apple
 
-    - path: /rest/products/search
-      method: GET
-      params:
-        q: test
-
-    - path: /search
-      method: GET
-      params:
-        q: test
+auth:
+  login_endpoints:
+    - path: /rest/user/login
+      method: POST
+      content_type: json
+      username_field: email
+      password_field: password
+      weak_credentials:
+        - username: admin@juice-sh.op
+          password: admin123
+        - username: admin@juice-sh.op
+          password: admin
+        - username: test@test.com
+          password: test
